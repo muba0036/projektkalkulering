@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${project.name}">Projekt</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <h1>Alpha Solutions</h1>
+    <nav>
+        <a th:href="@{/projects}" class="btn-link">← Tilbage</a>
+        <a th:href="@{'/projects/' + ${project.id} + '/edit'}" class="btn-secondary">Rediger</a>
+        <a th:href="@{'/subprojects/new?projectId=' + ${project.id}}" class="btn-primary">+ Delprojekt</a>
+    </nav>
+</header>
+
+<main>
+    <h1 class="project-title" th:text="'Project: ' + ${project.name}"></h1>
+
+    <!-- Project info -->
+    <table class="info-table">
+        <tr>
+            <td class="info-label">Description:</td>
+            <td th:text="${project.description}"></td>
+        </tr>
+        <tr>
+            <td class="info-label">Status:</td>
+            <td>
+                <span th:classappend="${project.status == 'IN_PROGRESS' ? 'status-progress' : (project.status == 'DONE' ? 'status-done' : 'status-new')}"
+                      class="status-badge"
+                      th:text="${project.status == 'IN_PROGRESS' ? 'IN PROGRESS' : (project.status == 'DONE' ? 'DONE' : 'NOT STARTED')}">
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td class="info-label">Date created:</td>
+            <td th:text="${project.createdAt != null ? #temporals.format(project.createdAt, 'dd-MM-yyyy') : '-'}"></td>
+        </tr>
+        <tr>
+            <td class="info-label">Last updated:</td>
+            <td th:text="${project.updatedAt != null ? #temporals.format(project.updatedAt, 'dd-MM-yyyy') : '-'}"></td>
+        </tr>
+    </table>
+
+    <!-- Summary -->
+    <h2>Summary</h2>
+    <table class="calc-table">
+        <thead>
+        <tr>
+            <th colspan="3" class="col-labor">Labor</th>
+            <th colspan="3" class="col-materials">Materials</th>
+            <th></th><th></th><th></th>
+        </tr>
+        <tr>
+            <th>Hours</th>
+            <th>Rate</th>
+            <th>Total</th>
+            <th>Units</th>
+            <th>Cost/units</th>
+            <th>Total</th>
+            <th>Budgeted</th>
+            <th>Actual</th>
+            <th>Difference</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td th:text="${#numbers.formatDecimal(summaryHours, 0, 'POINT', 0, 'COMMA')}"></td>
+            <td th:text="${#numbers.formatDecimal(summaryAvgRate, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></td>
+            <td th:text="${#numbers.formatDecimal(summaryLaborTotal, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></td>
+            <td th:text="${summaryUnits > 0 ? #numbers.formatDecimal(summaryUnits, 0, 'POINT', 0, 'COMMA') : '-'}"></td>
+            <td th:text="${summaryUnits > 0 ? #numbers.formatDecimal(summaryAvgCostPerUnit, 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></td>
+            <td th:text="${summaryMaterialsTotal > 0 ? #numbers.formatDecimal(summaryMaterialsTotal, 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></td>
+            <td th:text="${#numbers.formatDecimal(summaryBudgeted, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></td>
+            <td th:text="${#numbers.formatDecimal(summaryActual, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></td>
+            <td th:classappend="${summaryDiff >= 0 ? 'diff-positive' : 'diff-negative'}"
+                th:text="${#numbers.formatDecimal(summaryDiff, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Breakdown -->
+    <h2>Breakdown</h2>
+    <table class="calc-table">
+        <thead>
+        <tr>
+            <th rowspan="2" class="col-item">Item</th>
+            <th colspan="3" class="col-labor">Labor</th>
+            <th colspan="3" class="col-materials">Materials</th>
+            <th rowspan="2">Budgeted</th>
+            <th rowspan="2">Actual</th>
+            <th rowspan="2">Difference</th>
+        </tr>
+        <tr>
+            <th>Hours</th>
+            <th>Rate</th>
+            <th>Total</th>
+            <th>Units</th>
+            <th>Cost/units</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="entry, iterStat : ${tasksBySubProject}">
+            <th:block th:with="sp=${entry.key}, tasks=${entry.value}, st=${spTotals[entry.key.id]}">
+                <!-- Subproject header row -->
+                <tr th:classappend="${sp.status == 'DONE' ? 'subproject-row subproject-done' : 'subproject-row'}" th:onclick="'toggleSection(\'sp-' + ${sp.id} + '\')'">
+                    <td colspan="10">
+                        <span class="toggle-icon">⟳</span>
+                        <span th:text="${sp.name}"></span>
+                        <span th:if="${sp.status == 'DONE'}" class="badge-done">✓ Færdig</span>
+                        <span th:if="${sp.status != 'DONE'}" onclick="event.stopPropagation()">
+                            <a th:href="@{'/tasks/new?subProjectId=' + ${sp.id}}" class="btn-add-task">+ Opgave</a>
+                            <form th:action="@{'/subprojects/' + ${sp.id} + '/done'}" method="post" style="display:inline">
+                                <input type="hidden" name="projectId" th:value="${project.id}">
+                                <button type="submit" class="btn-done">Færdig</button>
+                            </form>
+                        </span>
+                    </td>
+                </tr>
+                <!-- Task rows -->
+                <tr th:each="task : ${tasks}" th:classappend="'sp-' + ${sp.id}" class="task-row">
+                    <td>
+                        <span th:text="${task.name}"></span>
+                        <span class="task-actions">
+                            <a th:href="@{'/tasks/' + ${task.id} + '/edit'}" class="action-link">✏</a>
+                            <form th:action="@{'/tasks/' + ${task.id} + '/delete'}" method="post" style="display:inline">
+                                <input type="hidden" name="subProjectId" th:value="${task.subProjectId}">
+                                <button type="submit" class="action-btn-danger" onclick="return confirm('Slet opgave?')">✕</button>
+                            </form>
+                        </span>
+                    </td>
+                    <td th:text="${task.estimatedHours > 0 ? #numbers.formatDecimal(task.estimatedHours, 0, 'POINT', 0, 'COMMA') : '-'}"></td>
+                    <td th:text="${task.hourlyRate > 0 ? #numbers.formatDecimal(task.hourlyRate, 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></td>
+                    <td th:text="${task.laborTotal > 0 ? #numbers.formatDecimal(task.laborTotal, 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></td>
+                    <td th:text="${task.materialUnits > 0 ? #numbers.formatDecimal(task.materialUnits, 0, 'POINT', 0, 'COMMA') : '-'}"></td>
+                    <td th:text="${task.materialCostPerUnit > 0 ? #numbers.formatDecimal(task.materialCostPerUnit, 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></td>
+                    <td th:text="${task.materialsTotal > 0 ? #numbers.formatDecimal(task.materialsTotal, 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></td>
+                    <td th:text="${#numbers.formatDecimal(task.budgetedCost, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></td>
+                    <td th:text="${#numbers.formatDecimal(task.actualCost, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></td>
+                    <td th:classappend="${task.difference >= 0 ? 'diff-positive' : 'diff-negative'}"
+                        th:text="${#numbers.formatDecimal(task.difference, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></td>
+                </tr>
+                <!-- Subtotal row -->
+                <tr class="subtotal-row">
+                    <td><strong th:text="${sp.name} + ' Total'"></strong></td>
+                    <td><strong th:text="${#numbers.formatDecimal(st['hours'], 0, 'POINT', 0, 'COMMA')}"></strong></td>
+                    <td><strong th:text="${#numbers.formatDecimal(st['rate'], 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+                    <td><strong th:text="${#numbers.formatDecimal(st['laborTotal'], 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+                    <td><strong th:text="${st['units'] > 0 ? #numbers.formatDecimal(st['units'], 0, 'POINT', 0, 'COMMA') : '-'}"></strong></td>
+                    <td><strong th:text="${st['units'] > 0 ? #numbers.formatDecimal(st['costPerUnit'], 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></strong></td>
+                    <td><strong th:text="${st['materialsTotal'] > 0 ? #numbers.formatDecimal(st['materialsTotal'], 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></strong></td>
+                    <td><strong th:text="${#numbers.formatDecimal(st['budgeted'], 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+                    <td><strong th:text="${#numbers.formatDecimal(st['actual'], 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+                    <td><strong th:classappend="${st['diff'] >= 0 ? 'diff-positive' : 'diff-negative'}"
+                               th:text="${#numbers.formatDecimal(st['diff'], 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+                </tr>
+            </th:block>
+        </th:block>
+        </tbody>
+        <tfoot>
+        <tr class="total-row">
+            <td><strong>TOTAL</strong></td>
+            <td><strong th:text="${#numbers.formatDecimal(summaryHours, 0, 'POINT', 0, 'COMMA')}"></strong></td>
+            <td><strong th:text="${#numbers.formatDecimal(summaryAvgRate, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+            <td><strong th:text="${#numbers.formatDecimal(summaryLaborTotal, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+            <td><strong th:text="${summaryUnits > 0 ? #numbers.formatDecimal(summaryUnits, 0, 'POINT', 0, 'COMMA') : '-'}"></strong></td>
+            <td><strong th:text="${summaryUnits > 0 ? #numbers.formatDecimal(summaryAvgCostPerUnit, 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></strong></td>
+            <td><strong th:text="${summaryMaterialsTotal > 0 ? #numbers.formatDecimal(summaryMaterialsTotal, 0, 'POINT', 2, 'COMMA') + ' kr.' : '-'}"></strong></td>
+            <td><strong th:text="${#numbers.formatDecimal(summaryBudgeted, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+            <td><strong th:text="${#numbers.formatDecimal(summaryActual, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+            <td><strong th:classappend="${summaryDiff >= 0 ? 'diff-positive' : 'diff-negative'}"
+                       th:text="${#numbers.formatDecimal(summaryDiff, 0, 'POINT', 2, 'COMMA') + ' kr.'}"></strong></td>
+        </tr>
+        </tfoot>
+    </table>
+</main>
+
+<script>
+    function toggleSection(sectionClass) {
+        document.querySelectorAll('.' + sectionClass).forEach(row => {
+            row.style.display = row.style.display === 'none' ? '' : 'none';
+        });
+    }
+</script>
+</body>
+</html>

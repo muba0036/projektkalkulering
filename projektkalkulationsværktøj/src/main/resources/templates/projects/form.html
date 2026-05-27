@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Projekt - Alpha Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <h1>Alpha Solutions</h1>
+    <nav>
+        <a th:href="@{/projects}" class="btn-link">← Tilbage til projekter</a>
+    </nav>
+</header>
+
+<main>
+    <h2 th:text="${project.id == 0 ? 'Nyt Projekt' : 'Rediger Projekt'}"></h2>
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <form th:action="${project.id == 0 ? '/projects/new' : '/projects/' + project.id + '/edit'}"
+          th:object="${project}" method="post" class="form-card">
+
+        <div class="form-group">
+            <label for="name">Navn *</label>
+            <input type="text" id="name" th:field="*{name}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Beskrivelse</label>
+            <textarea id="description" th:field="*{description}" rows="4"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" th:field="*{status}">
+                    <option value="NOT_STARTED">Ikke startet</option>
+                    <option value="IN_PROGRESS">I gang</option>
+                    <option value="DONE">Faerdig</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="budget">Budget (kr.)</label>
+                <input type="number" step="1000" min="0" id="budget" th:field="*{budget}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="startDate">Startdato</label>
+                <input type="date" id="startDate" th:field="*{startDate}">
+            </div>
+            <div class="form-group">
+                <label for="deadline">Deadline</label>
+                <input type="date" id="deadline" th:field="*{deadline}">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Gem</button>
+        <a th:href="@{/projects}" class="btn-secondary">Annuller</a>
+    </form>
+</main>
+</body>
+</html>

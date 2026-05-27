@@ -1,0 +1,5 @@
+com/alphasolutions/projectcalc/service/UserServiceTest.class
+com/alphasolutions/projectcalc/repository/ProjectRepositoryIntegrationTest.class
+com/alphasolutions/projectcalc/service/TaskServiceTest.class
+com/alphasolutions/projectcalc/ProjectCalculationApplicationTests.class
+com/alphasolutions/projectcalc/service/ProjectServiceTest.class

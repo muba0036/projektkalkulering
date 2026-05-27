@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Opgave</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <h1>Alpha Solutions</h1>
+    <nav>
+        <a th:href="@{'/projects/' + ${projectId}}" class="btn-link">← Tilbage til projekt</a>
+    </nav>
+</header>
+
+<main>
+    <h2 th:text="${task.id == 0 ? 'Ny Opgave' : 'Rediger Opgave'}"></h2>
+
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <form th:action="${task.id == 0 ? '/tasks/new' : '/tasks/' + task.id + '/edit'}"
+          th:object="${task}" method="post" class="form-card">
+
+        <input type="hidden" th:field="*{subProjectId}">
+
+        <div class="form-group">
+            <label for="name">Navn *</label>
+            <input type="text" id="name" th:field="*{name}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Beskrivelse</label>
+            <textarea id="description" th:field="*{description}" rows="3"></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="estimatedHours">Estimerede timer</label>
+                <input type="number" step="0.5" min="0" id="estimatedHours" th:field="*{estimatedHours}">
+            </div>
+            <div class="form-group">
+                <label for="actualHours">Brugte timer</label>
+                <input type="number" step="0.5" min="0" id="actualHours" th:field="*{actualHours}">
+            </div>
+            <div class="form-group">
+                <label for="hourlyRate">Timepris (kr.)</label>
+                <input type="number" step="1" min="0" id="hourlyRate" th:field="*{hourlyRate}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="materialUnits">Materialer (antal)</label>
+                <input type="number" step="1" min="0" id="materialUnits" th:field="*{materialUnits}">
+            </div>
+            <div class="form-group">
+                <label for="materialCostPerUnit">Pris pr. enhed (kr.)</label>
+                <input type="number" step="0.01" min="0" id="materialCostPerUnit" th:field="*{materialCostPerUnit}">
+            </div>
+            <div class="form-group">
+                <label for="budgetedCost">Budget (kr.)</label>
+                <input type="number" step="1" min="0" id="budgetedCost" th:field="*{budgetedCost}">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="deadline">Deadline</label>
+                <input type="date" id="deadline" th:field="*{deadline}">
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" th:field="*{status}">
+                    <option value="NOT_STARTED">Ikke startet</option>
+                    <option value="IN_PROGRESS">I gang</option>
+                    <option value="DONE">Færdig</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Gem</button>
+        <a th:href="@{'/projects/' + ${projectId}}" class="btn-secondary">Annuller</a>
+    </form>
+</main>
+</body>
+</html>

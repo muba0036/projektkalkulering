@@ -1,0 +1,17 @@
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/ProjectCalculationApplication.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/controller/LoginController.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/controller/ProjectController.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/controller/SubProjectController.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/controller/TaskController.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/model/Project.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/model/SubProject.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/model/Task.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/model/User.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/repository/ProjectRepository.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/repository/SubProjectRepository.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/repository/TaskRepository.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/repository/UserRepository.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/service/ProjectService.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/service/SubProjectService.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/service/TaskService.java
+/Users/test/projektkalkulationsværktøj/src/main/java/com/alphasolutions/projectcalc/service/UserService.java

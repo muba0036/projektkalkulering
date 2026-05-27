@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${subProject.name}">Delprojekt</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <h1 th:text="${subProject.name}"></h1>
+    <nav>
+        <a th:href="@{'/projects/' + ${subProject.projectId}}" class="btn-link">Tilbage til projekt</a>
+    </nav>
+</header>
+
+<main>
+    <section class="info-card">
+        <p><strong>Beskrivelse:</strong> <span th:text="${subProject.description}"></span></p>
+        <p><strong>Deadline:</strong> <span th:text="${subProject.deadline}"></span></p>
+        <p><strong>Estimerede timer:</strong> <span th:text="${subProject.totalHours}"></span></p>
+        <p><strong>CO2-aftryk (estimat):</strong>
+            <span th:text="${#numbers.formatDecimal(co2Footprint, 1, 2)} + ' kg CO2e'"></span></p>
+    </section>
+
+    <h2>Opgaver</h2>
+    <div class="action-bar">
+        <a th:href="@{'/tasks/new?subProjectId=' + ${subProject.id}}" class="btn-primary">+ Ny Opgave</a>
+    </div>
+
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Navn</th>
+            <th>Estimerede timer</th>
+            <th>Brugte timer</th>
+            <th>Deadline</th>
+            <th>Status</th>
+            <th>Handlinger</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="task : ${tasks}">
+            <td th:text="${task.name}"></td>
+            <td th:text="${task.estimatedHours}"></td>
+            <td th:text="${task.actualHours}"></td>
+            <td th:text="${task.deadline}"></td>
+            <td>
+                <span class="status-badge"
+                      th:classappend="${task.status == 'DONE' ? 'status-done' :
+                                       task.status == 'IN_PROGRESS' ? 'status-progress' : 'status-new'}"
+                      th:text="${task.status}"></span>
+            </td>
+            <td>
+                <a th:href="@{'/tasks/' + ${task.id} + '/edit'}" class="btn-link">Rediger</a>
+                <form th:action="@{'/tasks/' + ${task.id} + '/delete'}" method="post" style="display:inline">
+                    <input type="hidden" name="subProjectId" th:value="${subProject.id}">
+                    <button type="submit" class="btn-danger" onclick="return confirm('Slet opgave?')">Slet</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(tasks)}">
+            <td colspan="6" class="empty">Ingen opgaver endnu.</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

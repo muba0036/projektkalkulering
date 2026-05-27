@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Projekter - Alpha Solutions</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <h1>Alpha Solutions - Projekter</h1>
+    <nav>
+        <span>Velkommen, <strong th:text="${user.username}"></strong></span>
+        <a th:href="@{/logout}" class="btn-link">Log ud</a>
+    </nav>
+</header>
+
+<main>
+    <div class="action-bar">
+        <a th:href="@{/projects/new}" class="btn-primary">+ Nyt Projekt</a>
+    </div>
+
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Navn</th>
+            <th>Beskrivelse</th>
+            <th>Startdato</th>
+            <th>Deadline</th>
+            <th>Estimerede timer</th>
+            <th>Handlinger</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="project : ${projects}">
+            <td><a th:href="@{'/projects/' + ${project.id}}" th:text="${project.name}"></a></td>
+            <td th:text="${project.description}"></td>
+            <td th:text="${project.startDate}"></td>
+            <td th:text="${project.deadline}"></td>
+            <td th:text="${project.totalHours}"></td>
+            <td>
+                <a th:href="@{'/projects/' + ${project.id} + '/edit'}" class="btn-link">Rediger</a>
+                <form th:action="@{'/projects/' + ${project.id} + '/delete'}" method="post" style="display:inline">
+                    <button type="submit" class="btn-danger" onclick="return confirm('Slet projekt?')">Slet</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(projects)}">
+            <td colspan="6" class="empty">Ingen projekter endnu. Opret det foerste!</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

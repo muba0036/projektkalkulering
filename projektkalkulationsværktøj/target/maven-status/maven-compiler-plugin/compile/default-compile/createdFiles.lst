@@ -1,0 +1,17 @@
+com/alphasolutions/projectcalc/service/UserService.class
+com/alphasolutions/projectcalc/service/TaskService.class
+com/alphasolutions/projectcalc/controller/TaskController.class
+com/alphasolutions/projectcalc/repository/SubProjectRepository.class
+com/alphasolutions/projectcalc/model/SubProject.class
+com/alphasolutions/projectcalc/controller/LoginController.class
+com/alphasolutions/projectcalc/controller/SubProjectController.class
+com/alphasolutions/projectcalc/service/ProjectService.class
+com/alphasolutions/projectcalc/repository/UserRepository.class
+com/alphasolutions/projectcalc/ProjectCalculationApplication.class
+com/alphasolutions/projectcalc/model/Task.class
+com/alphasolutions/projectcalc/service/SubProjectService.class
+com/alphasolutions/projectcalc/repository/TaskRepository.class
+com/alphasolutions/projectcalc/model/Project.class
+com/alphasolutions/projectcalc/repository/ProjectRepository.class
+com/alphasolutions/projectcalc/controller/ProjectController.class
+com/alphasolutions/projectcalc/model/User.class
